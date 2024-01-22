@@ -6,7 +6,7 @@ class App():
     missed = 0
 
     def __init__(self):
-        # 変数の定義や初期設定
+        # 変数、初期設定
         pyxel.init(200, 200)
         self.player = Player()
         self.enemies = []
@@ -15,11 +15,10 @@ class App():
         self.sec = 20
         self.screen = Screen()
 
-       # BGMの設定 chay gpt 使用
-        pyxel.sound(1).set("a3e2c2e2g2e2c2e2a2", "s", "7", "n", 25)
+       # BGMの設定  怪獣の花唄のサビの一部を再現
+        pyxel.sound(1).set("f#2f#2d2e2f#2g2a2d2c#3d3d3b3a3f#2e2d2d2e2f#2g2a2d2g2f#2e2d2", "s", "7", "n", 50)
         pyxel.play(1, [1], loop=True)
 
-        # いつもの
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -89,7 +88,7 @@ class ball:
     def __init__(self):
         pass
     
-    # 四角と丸を組み合わせて車を描画する
+    # ボールを描画する
     def draw(self, x, y, c):
             pyxel.circ(x , y, 10, 10)
        
@@ -112,11 +111,15 @@ class Gameclear:
     def __init__(self):
         self.ball = ball()
 
-    # ゲームクリアの文言とともに、ボールを1個表示する
+    # GAME CLEARの文字を表示。ボールとラインを組み合わせた顔を1個表示させる
     def draw(self):
         pyxel.rect(0, 0, 200, 200, 7)
-        pyxel.text(80,80,"Game Clear !!",9)
-        self.ball.draw(91, 90, 8)
+        pyxel.text(80,70,"Game Clear !!",9)
+        self.ball.draw(100, 100, 8)
+        pyxel.circ(102, 95, 5//4, 7)  # 目
+        pyxel.circ(98, 95, 5//4, 7)  # 目
+        pyxel.line(100, 103, 100, 100 , 7)#口
+
 
 
 # 文字を表示するフレームを描画するクラス
@@ -151,25 +154,23 @@ class Player:
     def __init__(self):
         self.x = 56
         self.y = 88
-        self.c = 8
         self.speed = 3
-        self.car = ball()
 
     def update(self):
         # キーボードの↑ボタンを押したらボールを上に移動する
         if pyxel.btn(pyxel.KEY_UP):
             self.y -= self.speed
-        
+
         # キーボードの↓ボタンを押したらボールを下に移動する
         elif pyxel.btn(pyxel.KEY_DOWN):
             self.y += self.speed
-        
+
         # ボールが上下の境界線を乗り越えないようにする
         if self.y < 25:
             self.y = 25
         elif self.y > 178:
             self.y = 178
-    
+
     # 敵との当たり判定の処理
     # 当たったらTrue, そうでなかったらFalseを返す
     def hit(self, enemies):
@@ -178,34 +179,44 @@ class Player:
                 return True
         else:
             return False
-    
+
     # 描画
     def draw(self):
-        self.car.draw(self.x, self.y, self.c)
+        # 人型の形を描画
+        pyxel.circ(self.x, self.y - 5, 5, 11)  # Head
+        pyxel.circ(self.x+2, self.y - 5, 5//6, 7)  # 目
+        pyxel.circ(self.x-2, self.y - 5, 5//6, 7)  # 目
+        pyxel.line(self.x, self.y-2, self.x, self.y , 7)#口
+        pyxel.line(self.x, self.y, self.x, self.y + 15, 11)  # Body
+        pyxel.line(self.x, self.y + 13, self.x - 5, self.y + 20, 11)  # Left leg
+        pyxel.line(self.x, self.y + 13, self.x + 5, self.y + 20, 11)  # Right leg
+        pyxel.line(self.x, self.y + 8, self.x - 5, self.y+3, 11)  # Left arm
+        pyxel.line(self.x, self.y + 8, self.x + 5, self.y+3, 11)  # Right arm
+
 
 
 # 敵の処理を行うクラス
 class Enemy:
-    #ランダムな色で出現させる
     def __init__(self):
         self.x = 200
         self.y = random.randrange(29, 200, 35)
-        self.c = random.randint(1, 4)
+        self.c = random.randint(1, 7)  # ランダムな色のインデックス
         self.speed = 5
-        self.ball = ball()
-        
+
     def update(self):
-        # 左に進ませ続ける
+        # 左に移動
         self.x -= self.speed
 
-        # 画面外に出たらインスタンス削除のためにFalseを返す
+        # 画面外に出たらインスタンスを削除するために False を返す
         if self.x < 0:
             return False
         else:
             return True
-    
-    # 描画
+
     def draw(self):
-        self.ball.draw(self.x, self.y, self.c)
+        # ランダムな色のインデックスを使って描画
+        pyxel.circ(self.x, self.y, 10, self.c)
+
+
 
 App()
